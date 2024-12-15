@@ -15,7 +15,6 @@ SQLALCHEMY_DATABASE_URL = URL.create(
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 session_local = sessionmaker(autoflush=False, bind=engine)
-Base.metadata.create_all(bind=engine)
 
 # Dependency to get the database session
 def get_db():
