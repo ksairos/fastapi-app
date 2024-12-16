@@ -1,8 +1,8 @@
 from fastapi import FastAPI, status, HTTPException
 from pydantic import BaseModel
 from psycopg_pool import ConnectionPool
-from .models import Base
-from .database import engine, SessionLocal
+from .db.models import Base
+from .db.database import engine, SessionLocal
 
 Base.metadata.create_all(bind=engine)
 
