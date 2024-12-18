@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 from typing import List
-from fastapi import FastAPI, status, HTTPException
+from fastapi import status, HTTPException
 from fastapi.params import Depends
-from sqlalchemy import select, text, update
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from ..db.models import User
 from ..db.database import get_db
 from ..schemas.schemas import UserCreate, UserResponse
-from ..utils import utils
+from ..auth import hashing
 
 router = APIRouter(
     # Instead of writing "/users" in each endpoint
@@ -25,7 +25,7 @@ def get_users(db: Session = Depends(get_db)):
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
     # Hash the user password
-    user.password = utils.hash(user.password)
+    user.password = utils.hash_fn(user.password)
 
     new_user = User(**user.model_dump())  
     
