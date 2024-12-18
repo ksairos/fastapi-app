@@ -6,7 +6,7 @@ from fastapi.params import Depends
 from sqlalchemy import select, text, update
 from sqlalchemy.orm import Session
 from ..auth.oauth2 import get_current_user
-from ..db.models import Post
+from ..db.models import Post, User
 from ..db.database import get_db
 from ..schemas.schemas import PostCreate, PostResponse, PostUpdate
 
@@ -17,14 +17,21 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[PostResponse])
-def get_posts(db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
-    print(user_id)
+def get_posts(
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    print(current_user.email)
     return db.scalars(select(Post)).all()
          
 
 @router.get("/{id}", response_model=PostResponse)
-def get_post(id: int, db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
-    print(user_id)
+def get_post(
+        id: int,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    print(current_user.email)
 
     #? Explicit way of writing the query
     # stmt = select(Post).where(Post.id == id)
@@ -39,9 +46,13 @@ def get_post(id: int, db: Session = Depends(get_db), user_id: int = Depends(get_
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
-def create_post(post: PostCreate, db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
+def create_post(
+        post: PostCreate,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
     # new_post = Post(title=post.title, content=post.content, published=post.published)
-    print(user_id)
+    print(current_user.email)
     new_post = Post(**post.model_dump())
     
     db.add(new_post)
@@ -52,8 +63,11 @@ def create_post(post: PostCreate, db: Session = Depends(get_db), user_id: int = 
     
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
-    print(user_id)
+def delete_post(
+        id: int, db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    print(current_user.email)
     
     #? ORM-Style deletion
 
@@ -79,8 +93,12 @@ def delete_post(id: int, db: Session = Depends(get_db), user_id: int = Depends(g
     return
 
 @router.put("/{id}", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
-def update_post(id: int, post: PostUpdate, db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
-    print(user_id)
+def update_post(
+        id: int, post: PostUpdate,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    print(current_user.email)
     #? Non-ORM Update
 
     #? Explicit way of writing the query

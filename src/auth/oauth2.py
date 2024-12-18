@@ -3,8 +3,13 @@ import jwt
 from fastapi import HTTPException, status
 from fastapi.params import Depends
 from jwt.exceptions import InvalidTokenError
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+from src.db.database import get_db
+from src.db.models import User
 from src.schemas.schemas import TokenData
 from fastapi.security import OAuth2PasswordBearer
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
@@ -41,11 +46,14 @@ def verify_access_token(token: str, credential_exception):
 
 # This function is used for a dependency injection in path functions
 # If the token is invalid or expired, credentials_exception is called
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail=f"Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"}
     )
 
-    return verify_access_token(token, credentials_exception)
+    token_data = verify_access_token(token, credentials_exception)
+    user = db.get(User, token_data.id)
+
+    return user

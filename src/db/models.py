@@ -1,7 +1,8 @@
 from datetime import datetime
-from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String, text
+from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String, text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from .database import Base
+
 
 class Post(Base):
     # To modify the table use Alembic for database migrations
@@ -14,16 +15,18 @@ class Post(Base):
     # content = Column(String, nullable=False)
     # published = Column(Boolean, nullable=False, server_default='TRUE')
     # created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str]
     content: Mapped[str]
     published: Mapped[bool] = mapped_column(server_default="TRUE")
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
+
 
 class User(Base):
     __tablename__ = "users"
-    
+
     # id = Column(Integer, primary_key=True, nullable=False)
     # email = Column(String, nullable=False, unique=True)
     # password = Column(String, nullable=False)
