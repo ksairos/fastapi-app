@@ -4,6 +4,8 @@ from fastapi import status, HTTPException
 from fastapi.params import Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from ..auth.hashing import hash_fn
 from ..db.models import User
 from ..db.database import get_db
 from ..schemas.schemas import UserCreate, UserResponse
@@ -25,7 +27,7 @@ def get_users(db: Session = Depends(get_db)):
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
     # Hash the user password
-    user.password = utils.hash_fn(user.password)
+    user.password = hash_fn(user.password)
 
     new_user = User(**user.model_dump())  
     
