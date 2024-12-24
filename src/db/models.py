@@ -1,10 +1,10 @@
 from datetime import datetime
 from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String, text, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .database import Base
 
 
-class Post(Base):
+class PostModel(Base):
     # To modify the table use Alembic for database migrations
     # Anything changed here doesn't affect existing database
     # If anything changed here, delete the table and rerun the code
@@ -23,8 +23,9 @@ class Post(Base):
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
 
+    owner = relationship("UserModel")
 
-class User(Base):
+class UserModel(Base):
     __tablename__ = "users"
 
     # id = Column(Integer, primary_key=True, nullable=False)

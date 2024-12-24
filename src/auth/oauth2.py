@@ -1,21 +1,22 @@
 from datetime import timedelta, datetime, timezone
+
 import jwt
 from fastapi import HTTPException, status
 from fastapi.params import Depends
+from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
-from sqlalchemy import select
-from src.db.database import get_db
-from src.db.models import User
-from src.schemas.schemas import TokenData
-from fastapi.security import OAuth2PasswordBearer
 
+from src.config import settings
+from src.db.database import get_db
+from src.db.models import UserModel
+from src.schemas.schemas import TokenData
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
-SECRET_KEY = "3f8cbe0d238600f8961208ba0de2593e75fc10b9138c15a48d6fbe6e12553c72"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 
 # Creates a JWT Token, that's it
@@ -54,6 +55,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     )
 
     token_data = verify_access_token(token, credentials_exception)
-    user = db.get(User, token_data.id)
+    user = db.get(UserModel, token_data.id)
 
     return user
