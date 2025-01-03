@@ -37,3 +37,9 @@ class UserModel(Base):
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
+
+class VoteModel(Base):
+    __tablename__ = "votes"
+
+    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)

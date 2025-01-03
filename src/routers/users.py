@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter
 from fastapi import status, HTTPException
+from fastapi import status, HTTPException
 from fastapi.params import Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session

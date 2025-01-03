@@ -25,9 +25,7 @@ def get_posts(
         skip: int = 0,
         search: Optional[str] = ""
 ):
-    print(current_user.email)
-    print(search)
-    stmt = select(PostModel).filter(PostModel.title.contains(search)).limit(limit).offset(skip)
+    stmt = select(PostModel).where(PostModel.title.contains(search)).limit(limit).offset(skip)
     return db.scalars(stmt).all()
 
 
@@ -59,6 +57,7 @@ def create_post(
 ):
     # new_post = Post(title=post.title, content=post.content, published=post.published)
 
+    print(post)
     # Create a new post with data from the request body
     new_post = PostModel(**post.model_dump())
     # Add an owner_id from the currently logged-in user
@@ -109,11 +108,11 @@ def delete_post(
 
 @router.put("/{id}", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
 def update_post(
-        id: int, post: PostUpdate,
+        id: int,
+        post: PostUpdate,
         db: Session = Depends(get_db),
         current_user: UserModel = Depends(get_current_user)
 ):
-    print(current_user.email)
     # ? Non-ORM Update
 
     post_to_update = db.get(PostModel, id)
