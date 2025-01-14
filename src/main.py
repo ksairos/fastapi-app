@@ -5,8 +5,8 @@ from .db.database import engine
 from .db.models import Base
 from .routers import posts, users, auth, vote
 
-# ! User Alembic in production instead of create_all()
-Base.metadata.create_all(bind=engine)
+## Use Alembic instead of create_all()
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="My FastAPI Application",
