@@ -3,13 +3,13 @@ from typing import List, Optional
 from fastapi import APIRouter
 from fastapi import status, HTTPException
 from fastapi.params import Depends
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
 from ..auth.oauth2 import get_current_user
 from ..db.database import get_db
-from ..db.models import PostModel, UserModel
-from ..schemas.schemas import PostCreate, PostResponse, PostUpdate
+from ..db.models import PostModel, UserModel, VoteModel
+from ..schemas.schemas import PostCreate, PostResponse, PostUpdate, PostResponseWithVotes
 
 router = APIRouter(
     prefix="/posts",
@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=List[PostResponse])
+@router.get("/", response_model=List[PostResponseWithVotes])
 def get_posts(
         db: Session = Depends(get_db),
         current_user: UserModel = Depends(get_current_user),
@@ -25,28 +25,40 @@ def get_posts(
         skip: int = 0,
         search: Optional[str] = ""
 ):
-    stmt = select(PostModel).where(PostModel.title.contains(search)).limit(limit).offset(skip)
-    return db.scalars(stmt).all()
+
+    # stmt = (select(PostModel)
+    #         .where(PostModel.title.contains(search))
+    #         .limit(limit)
+    #         .offset(skip))
+
+    stmt = (select(PostModel, func.count(VoteModel.post_id).label("votes"))
+            .join(VoteModel, VoteModel.post_id == PostModel.id, isouter=True)
+            .group_by(PostModel.id))
+    result = db.execute(stmt).all()
+    return [{"post": row[0], "votes": row[1]} for row in result]
 
 
-@router.get("/{id}", response_model=PostResponse)
+@router.get("/{id}", response_model=PostResponseWithVotes)
 def get_post(
         id: int,
         db: Session = Depends(get_db),
         current_user: UserModel = Depends(get_current_user),
 ):
-    print(current_user.email)
 
-    # ? Explicit way of writing the query
-    # stmt = select(Post).where(Post.id == id)
-    # post = db.execute(stmt).scalar_one_or_none()
+    # ? Explicit way of writing the query to get the number of votes
+    stmt = (select(PostModel, func.count(VoteModel.post_id).label("votes"))
+            .where(PostModel.id == id)
+            .join(VoteModel, VoteModel.post_id == PostModel.id, isouter=True)
+            .group_by(PostModel.id))
+    post = db.execute(stmt).one_or_none()
 
     # ? Getting post by primary key
-    post = db.get(PostModel, id)
+    # post = db.get(PostModel, id)
+
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Can't find a post with ID {id}")
-    return post
+    return {"post": post[0], "votes": post[1]}
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=PostResponse)

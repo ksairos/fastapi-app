@@ -39,6 +39,10 @@ class PostResponse(PostBase):
     created_at: datetime
     owner: UserResponse
 
+class PostResponseWithVotes(BaseModel):
+    post: PostResponse
+    votes: int
+
 
 class Token(BaseModel):
     access_token: str
