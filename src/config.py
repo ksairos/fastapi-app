@@ -15,5 +15,4 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_minutes: int
 
-
 settings = Settings()
