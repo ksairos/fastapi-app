@@ -8,7 +8,8 @@ from .routers import posts, users, auth, vote
 ## Use Alembic instead of create_all()
 # Base.metadata.create_all(bind=engine)
 app = FastAPI(
-    title="Кошкин дом",
+    title="Если ты это читаешь, то я тебя люблю",
+    description="Котя",
     version="0.0.1", )
 
 # Setting up CORS
