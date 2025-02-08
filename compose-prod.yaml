@@ -1,17 +1,12 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ksairos/fastapi
     ports:
-      - "8000:8000"
+      - "80:8000"
     depends_on:
       - postgres
     env_file:
       - .env
-    volumes:
-      - .:/usr/src/app:ro
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     networks:
       - app-network
 
@@ -19,10 +14,12 @@ services:
   postgres:
     image: postgres:latest
     restart: always
+    env_file:
+      - .env
     environment:
-      - POSTGRES_USER=ksairos
-      - POSTGRES_PASSWORD=1298
-      - POSTGRES_DB=fastapi
+      - POSTGRES_USER={$DATABASE_USERNAME}
+      - POSTGRES_PASSWORD={$DATABASE_PASSWORD}
+      - POSTGRES_DB={$DATABASE_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

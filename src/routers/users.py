@@ -34,6 +34,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
     db.add(new_user)
 
+
     # TODO add duplicate email handling
     db.commit()
     db.refresh(new_user)

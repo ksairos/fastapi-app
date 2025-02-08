@@ -1,15 +1,13 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .db.database import engine
-from .db.models import Base
 from .routers import posts, users, auth, vote
 
 ## Use Alembic instead of create_all()
 # Base.metadata.create_all(bind=engine)
 app = FastAPI(
-    title="Если ты это читаешь, то я тебя люблю",
-    description="Котя",
+    title="My FastAPI App",
     version="0.0.1", )
 
 # Setting up CORS
@@ -31,4 +29,4 @@ app.include_router(vote.router)
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to my API"}
+    return {"message": "Welcome to my API 3"}

@@ -19,10 +19,12 @@ services:
   postgres:
     image: postgres:latest
     restart: always
+    env_file:
+      - .env
     environment:
-      - POSTGRES_USER=ksairos
-      - POSTGRES_PASSWORD=1298
-      - POSTGRES_DB=fastapi
+      - POSTGRES_USER={$DATABASE_USERNAME}
+      - POSTGRES_PASSWORD={$DATABASE_PASSWORD}
+      - POSTGRES_DB={$DATABASE_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
