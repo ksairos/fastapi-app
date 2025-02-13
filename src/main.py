@@ -1,8 +1,7 @@
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import posts, users, auth, vote
+from routers import posts, users, auth, vote
 
 ## Use Alembic instead of create_all()
 # Base.metadata.create_all(bind=engine)
