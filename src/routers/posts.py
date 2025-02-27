@@ -6,10 +6,10 @@ from fastapi.params import Depends
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
-from auth.oauth2 import get_current_user
-from db.database import get_db
-from db.models import PostModel, UserModel, VoteModel
-from schemas.schemas import PostCreate, PostResponse, PostUpdate, PostResponseWithVotes
+from src.auth.oauth2 import get_current_user
+from src.db.database import get_db
+from src.db.models import PostModel, UserModel, VoteModel
+from src.schemas.schemas import PostCreate, PostResponse, PostUpdate, PostResponseWithVotes
 
 router = APIRouter(
     prefix="/posts",

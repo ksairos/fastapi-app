@@ -7,10 +7,10 @@ from fastapi.params import Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from auth.hashing import hash_fn
-from db.database import get_db
-from db.models import UserModel
-from schemas.schemas import UserCreate, UserResponse
+from src.auth.hashing import hash_fn
+from src.db.database import get_db
+from src.db.models import UserModel
+from src.schemas.schemas import UserCreate, UserResponse
 
 router = APIRouter(
     # Instead of writing "/users" in each endpoint
